@@ -15,7 +15,9 @@
 
 # @ostai/koa-response
 
-Response middleware for koa that will handle response body and errors
+Response middleware for koa that will handle response body and errors.
+
+This module is designed to standardize server response structure.
 
 ## Install
 
@@ -26,8 +28,59 @@ $ npm i @ostai/koa-response
 ## Usage
 
 ```js
-const koa_response = require('@ostai/koa-response')
+const Koa = require('koa')
+const Router = require('@koa/router')
+
+const response = require('@ostai/koa-response')
+
+const app = new Koa()
+const router = new Router()
+
+router.get('/foo', () => 'ok')
+
+router.get('/bar', () => {
+  const error = new Error('bar')
+  error.status = 401
+  throw error
+})
+
+
+app
+.use(
+  response({
+    debug: true
+  })
+)
+.use(router.routes())
+.use(router.allowedMethods())
+
+
+app.listen(8888)
 ```
+
+```sh
+> curl http://localhost:8888/foo
+
+# http 200
+# ok
+```
+
+```sh
+> curl http://localhost:8888/bar
+
+# http 401
+# {"message":"bar"}
+```
+
+## response(options?): Function
+
+- **options?** `Object`
+  - **error?** `Function(ctx, error, rest): void` the method to handle error
+  - **success?** `Function(ctx, body, rest): void` the method to handle success
+  - **...rest?** `Object`
+    - **debug** `boolean=false` Which is used by the default value of `options.error`. By default, if `debug` is `false`, error response will not contain `message`.
+
+Returns `Function` the middleware function.
 
 ## License
 
