@@ -1,6 +1,6 @@
 {
   "name": "@ostai/koa-response",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Response middleware for koa that will handle response body and errors",
   "main": "src/index.js",
   "scripts": {
